@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💻The 90 Day Rebrand - Life Reset Portal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Cinzel for headers, Inter for clean readable text) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#faf8f5',
+                            100: '#f4efe6',
+                            200: '#e8dcce',
+                            300: '#d7c2ae',
+                            400: '#c2a38b',
+                            500: '#b1896e',
+                            600: '#9b6f56',
+                            700: '#7e5645',
+                            800: '#67473b',
+                            900: '#543b32',
+                        },
+                        sage: {
+                            50: '#f4f6f4',
+                            100: '#e3e8e3',
+                            500: '#879888',
+                            700: '#586859'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf8f5;
+            color: #4a3e3d;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f4efe6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c2a38b;
+            border-radius: 4px;
+        }
+
+        /* Smooth tab transition */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Burning Animation for Release Letter */
+        @keyframes burnUp {
+            0% {
+                box-shadow: 0 0 10px #ff7700, inset 0 0 10px #ff3300;
+                filter: brightness(1);
+            }
+            50% {
+                box-shadow: 0 0 30px #ff3300, inset 0 0 25px #ffaa00;
+                filter: brightness(1.3) sepia(0.8) hue-rotate(-20deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-40px) scale(0.95);
+                filter: brightness(0) blur(4px);
+            }
+        }
+
+        .burning {
+            animation: burnUp 2.5s forwards ease-in-out;
+            pointer-events: none;
+        }
+
+        /* Custom Range Slider */
+        input[type=range] {
+            accent-color: #9b6f56;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row bg-[#faf8f5] text-[#332a28] antialiased">
+
+    <!-- MOBILE HEADER -->
+    <header class="md:hidden flex items-center justify-between p-4 bg-[#f4efe6] border-b border-[#e8dcce] sticky top-0 z-30">
+        <div class="flex items-center space-x-2">
+            <span class="font-serif text-lg font-bold tracking-wider text-[#67473b]">THE 90 DAY REBRAND</span>
+        </div>
+        <button id="mobileMenuBtn" class="text-[#7e5645] hover:text-[#543b32] p-2 focus:outline-none">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </header>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-40 w-72 bg-[#f4efe6] border-r border-[#e8dcce] flex flex-col justify-between h-screen overflow-y-auto">
+        <div class="p-6">
+            <div class="mb-6">
+                <h1 class="font-serif text-xl font-bold tracking-widest text-[#67473b]">THE 90 DAY</h1>
+                <p class="font-serif text-sm tracking-widest text-[#9b6f56] uppercase -mt-1">Rebrand Blueprint</p>
+                <p class="text-xs text-[#7e5645]/70 mt-1">Reset & Elevate Your Life</p>
+            </div>
+
+            <!-- OVERALL PROGRESS BAR -->
+            <div class="mb-6 bg-[#faf8f5] p-3 rounded-xl border border-[#e8dcce]">
+                <div class="flex justify-between text-xs font-semibold text-[#67473b] mb-1">
+                    <span>Rebrand Progress</span>
+                    <span id="overallProgressPercent">0%</span>
+                </div>
+                <div class="w-full bg-[#e8dcce] rounded-full h-2 overflow-hidden">
+                    <div id="overallProgressBar" class="bg-[#9b6f56] h-2 rounded-full transition-all duration-500 w-0"></div>
+                </div>
+            </div>
+
+            <!-- NAVIGATION LINKS -->
+            <nav class="space-y-1 text-sm font-medium" id="navigation">
+                <button onclick="switchTab('tab-audit')" class="nav-btn active w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition text-[#67473b] bg-[#e8dcce]/60 font-semibold" data-tab="tab-audit">
+                    <span class="w-6 text-center text-xs font-serif text-[#9b6f56]">01</span>
+                    <i class="fa-solid fa-chart-pie w-4 text-center"></i>
+                    <span class="truncate">Life Audit</span>
+                </button>
+                <button onclick="switchTab('tab-release')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition text-[#7e5645] hover:bg-[#e8dcce]/40" data-tab="tab-release">
+                    <span class="w-6 text-center text-xs font-serif text-[#9b6f56]">02</span>
+                    <i class="fa-solid fa-[#fire] fa-fire w-4 text-center"></i>
+                    <span class="truncate">Release & Reframe</span>
+                </button>
+                <button onclick="switchTab('tab-brand')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition text-[#7e5645] hover:bg-[#e8dcce]/40" data-tab="tab-brand">
+                    <span class="w-6 text-center text-xs font-serif text-[#9b6f56]">03</span>
+                    <i class="fa-solid fa-[#crown] fa-crown w-4 text-center"></i>
+                    <span class="truncate">Brand Identity</span>
+                </button>
+                <button onclick="switchTab('tab-vision')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition text-[#7e5645] hover:bg-[#e8dcce]/40" data-tab="tab-vision">
+                    <span class="w-6 text-center text-xs font-serif text-[#9b6f56]">04</span>
+                    <i class="fa-solid fa-[#image] fa-image w-4 text-center"></i>
+                    <span class="truncate">Vision Board</span>
+                </button>
+                <button onclick="switchTab('tab-goals')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition text-[#7e5645] hover:bg-[#e8dcce]/40" data-tab="tab-goals">
+                    <span class="w-6 text-center text-xs font-serif text-[#9b6f56]">05</span>
+                    <i class="fa-solid fa-[#bullseye] fa-bullseye w-4 text-center"></i>
+                    <span class="truncate">90-Day Goals</span>
+                </button>
+                <button onclick="switchTab('tab-habits')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition text-[#7e5645] hover:bg-[#e8dcce]/40" data-tab="tab-habits">
+                    <span class="w-6 text-center text-xs font-serif text-[#9b6f56]">06</span>
+                    <i class="fa-solid fa-[#arrows-rotate] fa-arrows-rotate w-4 text-center"></i>
+                    <span class="truncate">Habit Architecture</span>
+                </button>
+                <button onclick="switchTab('tab-confidence')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition text-[#7e5645] hover:bg-[#e8dcce]/40" data-tab="tab-confidence">
+                    <span class="w-6 text-center text-xs font-serif text-[#9b6f56]">07</span>
+                    <i class="fa-solid fa-[#wand-magic-sparkles] fa-wand-magic-sparkles w-4 text-center"></i>
+                    <span class="truncate">Confidence Engine</span>
+                </button>
+                <button onclick="switchTab('tab-social')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition text-[#7e5645] hover:bg-[#e8dcce]/40" data-tab="tab-social">
+                    <span class="w-6 text-center text-xs font-serif text-[#9b6f56]">08</span>
+                    <i class="fa-solid fa-[#users] fa-users w-4 text-center"></i>
+                    <span class="truncate">Social Circle</span>
+                </button>
+                <button onclick="switchTab('tab-digital')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition text-[#7e5645] hover:bg-[#e8dcce]/40" data-tab="tab-digital">
+                    <span class="w-6 text-center text-xs font-serif text-[#9b6f56]">09</span>
+                    <i class="fa-solid fa-[#mobile-screen] fa-mobile-screen w-4 text-center"></i>
+                    <span class="truncate">Online Presence</span>
+                </button>
+                <button onclick="switchTab('tab-evolve')" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition text-[#7e5645] hover:bg-[#e8dcce]/40" data-tab="tab-evolve">
+                    <span class="w-6 text-center text-xs font-serif text-[#9b6f56]">10</span>
+                    <i class="fa-solid fa-[#book-open] fa-book-open w-4 text-center"></i>
+                    <span class="truncate">Evolve Curriculum</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- BOTTOM ACTIONS -->
+        <div class="p-4 border-t border-[#e8dcce] bg-[#efe7dc] space-y-2">
+            <button onclick="exportData()" class="w-full text-xs font-semibold text-[#67473b] hover:text-[#543b32] py-2 px-3 rounded bg-[#faf8f5] border border-[#e8dcce] flex items-center justify-center space-x-2 transition shadow-sm">
+                <i class="fa-solid fa-download"></i>
+                <span>Export Plan (JSON)</span>
+            </button>
+            <button onclick="window.print()" class="w-full text-xs font-semibold text-[#7e5645] hover:text-[#543b32] py-2 px-3 rounded bg-transparent flex items-center justify-center space-x-2 transition">
+                <i class="fa-solid fa-print"></i>
+                <span>Print Summary</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="flex-1 h-screen overflow-y-auto p-4 sm:p-6 md:p-10">
+        <div class="max-w-4xl mx-auto space-y-8">
+
+            <!-- 01. LIFE AUDIT -->
+            <section id="tab-audit" class="tab-content active space-y-6">
+                <div class="border-b border-[#e8dcce] pb-4 flex flex-col sm:flex-row justify-between sm:items-end gap-2">
+                    <div>
+                        <span class="text-xs font-serif tracking-widest text-[#9b6f56] uppercase">STEP 01 — 10 MINS EST.</span>
+                        <h2 class="font-serif text-3xl font-bold text-[#543b32]">Life Audit</h2>
+                        <p class="text-sm text-[#7e5645]">Rate every area of your current life from 1 (poor) to 10 (thriving).</p>
+                    </div>
+                    <div class="bg-[#f4efe6] px-3 py-1.5 rounded-full border border-[#e8dcce] text-xs font-semibold text-[#67473b] self-start sm:self-auto">
+                        Average Score: <span id="auditAverage">0.0</span> / 10
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="auditItemsContainer">
+                    <!-- JS renders audit sliders dynamically -->
+                </div>
+            </section>
+
+            <!-- 02. RELEASE & REFRAME -->
+            <section id="tab-release" class="tab-content space-y-6">
+                <div class="border-b border-[#e8dcce] pb-4">
+                    <span class="text-xs font-serif tracking-widest text-[#9b6f56] uppercase">STEP 02 — 45 MINS EST.</span>
+                    <h2 class="font-serif text-3xl font-bold text-[#543b32]">Release & Reframe</h2>
+                    <p class="text-sm text-[#7e5645]">Contrast who you are now with who you are stepping into, then burn what no longer serves you.</p>
+                </div>
+
+                <!-- CURRENT VS FUTURE COMPARISON -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Current You -->
+                    <div class="bg-[#f4efe6]/60 p-5 rounded-2xl border border-[#e8dcce] space-y-4">
+                        <div class="flex items-center space-x-2 text-[#7e5645]">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <h3 class="font-serif font-bold text-lg">Current You</h3>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <label class="block text-xs font-medium text-[#67473b] mb-1">How you think</label>
+                                <input type="text" id="cur_think" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Limiting beliefs, doubts...">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-[#67473b] mb-1">How you speak to yourself</label>
+                                <input type="text" id="cur_speak" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Self-critical, harsh tone...">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-[#67473b] mb-1">Daily habits</label>
+                                <input type="text" id="cur_habits" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Late sleeping, endless scrolling...">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-[#67473b] mb-1">Energy levels & emotions</label>
+                                <input type="text" id="cur_energy" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Sluggish, anxious, drained...">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-[#67473b] mb-1">What you tolerate</label>
+                                <input type="text" id="cur_tolerate" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Settling for less, poor treatment...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Future You -->
+                    <div class="bg-[#efe7dc]/80 p-5 rounded-2xl border border-[#c2a38b] space-y-4">
+                        <div class="flex items-center space-x-2 text-[#543b32]">
+                            <i class="fa-solid fa-sparkles"></i>
+                            <h3 class="font-serif font-bold text-lg">Future You</h3>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div>
+                                <label class="block text-xs font-medium text-[#543b32] mb-1">How you want to think</label>
+                                <input type="text" id="fut_think" class="w-full bg-[#faf8f5] border border-[#c2a38b]/60 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Abundance, possibilities...">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-[#543b32] mb-1">How you choose to speak to yourself</label>
+                                <input type="text" id="fut_speak" class="w-full bg-[#faf8f5] border border-[#c2a38b]/60 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Empowerment, grace, clarity...">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-[#543b32] mb-1">Habits you want to embody</label>
+                                <input type="text" id="fut_habits" class="w-full bg-[#faf8f5] border border-[#c2a38b]/60 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Morning routine, workout, deep work...">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-[#543b32] mb-1">Energy you want to feel</label>
+                                <input type="text" id="fut_energy" class="w-full bg-[#faf8f5] border border-[#c2a38b]/60 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Vibrant, calm, focused...">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-[#543b32] mb-1">What you no longer allow</label>
+                                <input type="text" id="fut_allow" class="w-full bg-[#faf8f5] border border-[#c2a38b]/60 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Procrastination, disrespect...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BURNING RELEASE LETTER -->
+                <div class="bg-[#faf8f5] p-6 rounded-2xl border border-[#e8dcce] shadow-sm space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-serif font-bold text-lg text-[#543b32]">The Release Letter</h3>
+                            <p class="text-xs text-[#7e5645]">Write out all negative emotions, habits, and attachments you are letting go of. Once written, press "Burn & Release".</p>
+                        </div>
+                        <i class="fa-solid fa-fire-flame-curved text-2xl text-[#9b6f56]"></i>
+                    </div>
+
+                    <div id="releasePaper" class="relative transition-all duration-500">
+                        <textarea id="releaseText" rows="5" class="w-full bg-[#f4efe6]/50 border border-[#e8dcce] rounded-xl p-4 text-sm font-serif text-[#543b32] focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="I release my fear of failure, my attachment to old habits, and the need for external validation..."></textarea>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button onclick="burnReleaseLetter()" class="px-5 py-2.5 bg-[#7e5645] hover:bg-[#67473b] text-[#faf8f5] text-xs font-semibold uppercase tracking-wider rounded-lg transition shadow flex items-center space-x-2">
+                            <i class="fa-solid fa-fire"></i>
+                            <span>Burn & Release</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 03. BRAND IDENTITY -->
+            <section id="tab-brand" class="tab-content space-y-6">
+                <div class="border-b border-[#e8dcce] pb-4">
+                    <span class="text-xs font-serif tracking-widest text-[#9b6f56] uppercase">STEP 03 — 30 MINS EST.</span>
+                    <h2 class="font-serif text-3xl font-bold text-[#543b32]">Your Brand Identity</h2>
+                    <p class="text-sm text-[#7e5645]">Define your core identity pillars like a luxury brand re-positioning itself.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-[#f4efe6] p-5 rounded-2xl border border-[#e8dcce] space-y-2">
+                        <span class="text-xs font-serif tracking-wider text-[#9b6f56] uppercase font-bold">01. YOUR IMAGE</span>
+                        <p class="text-xs text-[#7e5645]">How do you present yourself? Style, aesthetics, body posture, grooming, presence.</p>
+                        <textarea id="brand_image" rows="4" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-xl p-3 text-sm text-[#332a28] focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Polished, minimalist, confident, calm poise..."></textarea>
+                    </div>
+
+                    <div class="bg-[#f4efe6] p-5 rounded-2xl border border-[#e8dcce] space-y-2">
+                        <span class="text-xs font-serif tracking-wider text-[#9b6f56] uppercase font-bold">02. YOUR VALUES</span>
+                        <p class="text-xs text-[#7e5645]">What non-negotiable principles guide every single action and decision?</p>
+                        <textarea id="brand_values" rows="4" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-xl p-3 text-sm text-[#332a28] focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Integrity, Discipline, Elegance, Growth, Freedom..."></textarea>
+                    </div>
+
+                    <div class="bg-[#f4efe6] p-5 rounded-2xl border border-[#e8dcce] space-y-2">
+                        <span class="text-xs font-serif tracking-wider text-[#9b6f56] uppercase font-bold">03. YOUR MISSION</span>
+                        <p class="text-xs text-[#7e5645]">What are you committed to creating or solving in this phase of life?</p>
+                        <textarea id="brand_mission" rows="4" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-xl p-3 text-sm text-[#332a28] focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="To build financial freedom and inspire quiet confidence..."></textarea>
+                    </div>
+
+                    <div class="bg-[#f4efe6] p-5 rounded-2xl border border-[#e8dcce] space-y-2">
+                        <span class="text-xs font-serif tracking-wider text-[#9b6f56] uppercase font-bold">04. YOUR VISION</span>
+                        <p class="text-xs text-[#7e5645]">Where are you leading yourself long-term? What is the ultimate outcome?</p>
+                        <textarea id="brand_vision" rows="4" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-xl p-3 text-sm text-[#332a28] focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Living in a serene environment, running a thriving business..."></textarea>
+                    </div>
+                </div>
+
+                <!-- BRAND IDENTITY SYNTHESIS CARD -->
+                <div class="bg-[#efe7dc] p-6 rounded-2xl border border-[#c2a38b] space-y-3">
+                    <h3 class="font-serif font-bold text-lg text-[#543b32] text-center uppercase tracking-widest">Your New Identity Statement</h3>
+                    <p class="text-xs text-center text-[#7e5645]">Summarize your rebrand in 1-2 powerful sentences.</p>
+                    <input type="text" id="brand_summary" class="w-full bg-[#faf8f5] border border-[#c2a38b] rounded-xl p-3 text-center font-serif text-base text-[#543b32] focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="&quot;I am a disciplined creator who leads with elegance, focus, and financial independence.&quot;">
+                </div>
+            </section>
+
+            <!-- 04. VISION BOARD -->
+            <section id="tab-vision" class="tab-content space-y-6">
+                <div class="border-b border-[#e8dcce] pb-4 flex flex-col sm:flex-row justify-between sm:items-end gap-2">
+                    <div>
+                        <span class="text-xs font-serif tracking-widest text-[#9b6f56] uppercase">STEP 04 — 60 MINS EST.</span>
+                        <h2 class="font-serif text-3xl font-bold text-[#543b32]">Vision Board</h2>
+                        <p class="text-sm text-[#7e5645]">Curate imagery for your Ideal Life & Ideal Day.</p>
+                    </div>
+                    <button onclick="addVisionCard()" class="px-4 py-2 bg-[#9b6f56] text-[#faf8f5] rounded-lg text-xs font-semibold hover:bg-[#7e5645] transition flex items-center space-x-1 self-start sm:self-auto">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Image Card</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="visionGrid">
+                    <!-- Dynamic vision board cards loaded here -->
+                </div>
+            </section>
+
+            <!-- 05. 90-DAY GOALS -->
+            <section id="tab-goals" class="tab-content space-y-6">
+                <div class="border-b border-[#e8dcce] pb-4">
+                    <span class="text-xs font-serif tracking-widest text-[#9b6f56] uppercase">STEP 05 — 30 MINS EST.</span>
+                    <h2 class="font-serif text-3xl font-bold text-[#543b32]">Your 90 Day Plan</h2>
+                    <p class="text-sm text-[#7e5645]">Break down big vision dreams into daily actionable execution steps.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Dreams -> Year Goals -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-[#f4efe6] p-4 rounded-xl border border-[#e8dcce]">
+                            <label class="block text-xs font-serif font-bold text-[#67473b] uppercase mb-2">Dreams List (Long Term)</label>
+                            <textarea id="goal_dreams" rows="3" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-2.5 text-sm focus:outline-none" placeholder="- Financial freedom&#10;- Dream home&#10;- Peak fitness"></textarea>
+                        </div>
+                        <div class="bg-[#f4efe6] p-4 rounded-xl border border-[#e8dcce]">
+                            <label class="block text-xs font-serif font-bold text-[#67473b] uppercase mb-2">2026 Core Goals</label>
+                            <textarea id="goal_year" rows="3" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-2.5 text-sm focus:outline-none" placeholder="1. Career & Business&#10;2. Financial milestones&#10;3. Health & Movement"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Breakdown Pipeline -->
+                    <div class="bg-[#efe7dc] p-5 rounded-2xl border border-[#c2a38b] space-y-4">
+                        <h3 class="font-serif font-bold text-base text-[#543b32] border-b border-[#c2a38b]/40 pb-2">Q1 Execution Breakdown</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-[#67473b] mb-1">Q1 Primary Goal(s)</label>
+                                <textarea id="goal_q1" rows="4" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-2.5 text-xs focus:outline-none" placeholder="Target 1-3 specific metrics or outcomes..."></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-[#67473b] mb-1">Monthly Milestones</label>
+                                <textarea id="goal_monthly" rows="4" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-2.5 text-xs focus:outline-none" placeholder="Month 1: Foundation&#10;Month 2: Scaling&#10;Month 3: Refinement"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-[#67473b] mb-1">Weekly & Daily Tasks</label>
+                                <textarea id="goal_daily" rows="4" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-2.5 text-xs focus:outline-none" placeholder="Weekly: Content schedule, 4x workouts&#10;Daily: 1hr deep work, reading..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 06. HABITS -->
+            <section id="tab-habits" class="tab-content space-y-6">
+                <div class="border-b border-[#e8dcce] pb-4">
+                    <span class="text-xs font-serif tracking-widest text-[#9b6f56] uppercase">STEP 06 — 25 MINS EST.</span>
+                    <h2 class="font-serif text-3xl font-bold text-[#543b32]">Habit Architecture</h2>
+                    <p class="text-sm text-[#7e5645]">Build supportive habits rooted in identity, not willpower.</p>
+                </div>
+
+                <div class="bg-[#f4efe6] p-5 rounded-2xl border border-[#e8dcce] space-y-4">
+                    <div>
+                        <label class="block text-xs font-serif font-bold text-[#67473b] uppercase mb-1">Identity Statement</label>
+                        <p class="text-xs text-[#7e5645] mb-2">Complete the phrase: "I am someone who..."</p>
+                        <input type="text" id="habit_identity" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="I am someone who honors their commitments and prioritizes well-being.">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-serif font-bold text-[#67473b] uppercase mb-1">3-5 Core Behaviors</label>
+                        <p class="text-xs text-[#7e5645] mb-2">What does your future self naturally do every single day?</p>
+                        <textarea id="habit_behaviors" rows="3" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="1. Wakes up at 6 AM without snoozing&#10;2. Drinks 2L water before noon&#10;3. Reviews daily schedule every morning"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-serif font-bold text-[#67473b] uppercase mb-1">Supportive System & Micro-Habits</label>
+                        <p class="text-xs text-[#7e5645] mb-2">Small supportive tweaks to make these behaviors frictionless.</p>
+                        <textarea id="habit_support" rows="3" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-3 text-sm focus:outline-none focus:ring-1 focus:ring-[#9b6f56]" placeholder="Lay out workout clothes night before; leave phone outside bedroom..."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 07. CONFIDENCE ENGINE -->
+            <section id="tab-confidence" class="tab-content space-y-6">
+                <div class="border-b border-[#e8dcce] pb-4">
+                    <span class="text-xs font-serif tracking-widest text-[#9b6f56] uppercase">STEP 07 — 20 MINS EST.</span>
+                    <h2 class="font-serif text-3xl font-bold text-[#543b32]">Confidence Engine</h2>
+                    <p class="text-sm text-[#7e5645]">Transmute perceived weaknesses into empowering daily affirmations.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-[#f4efe6] p-4 rounded-xl border border-[#e8dcce] space-y-2">
+                        <h3 class="font-serif font-bold text-sm text-[#67473b]">Your Strengths</h3>
+                        <textarea id="conf_strengths" rows="6" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-2.5 text-xs focus:outline-none" placeholder="- Resilient under pressure&#10;- Creative problem solver&#10;- Empathetic listener"></textarea>
+                    </div>
+
+                    <div class="bg-[#f4efe6] p-4 rounded-xl border border-[#e8dcce] space-y-2">
+                        <h3 class="font-serif font-bold text-sm text-[#67473b]">Perceived Weaknesses</h3>
+                        <textarea id="conf_weaknesses" rows="6" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-lg p-2.5 text-xs focus:outline-none" placeholder="- Overthinking money&#10;- Imposter syndrome&#10;- Inconsistent routine"></textarea>
+                    </div>
+
+                    <div class="bg-[#efe7dc] p-4 rounded-xl border border-[#c2a38b] space-y-2">
+                        <h3 class="font-serif font-bold text-sm text-[#543b32]">Positive Affirmations</h3>
+                        <textarea id="conf_affirmations" rows="6" class="w-full bg-[#faf8f5] border border-[#c2a38b]/60 rounded-lg p-2.5 text-xs focus:outline-none font-medium text-[#543b32]" placeholder="&quot;I am mastering my finances with confidence daily.&quot;&#10;&quot;My unique skills bring massive value.&quot;"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 08. SOCIAL CIRCLE -->
+            <section id="tab-social" class="tab-content space-y-6">
+                <div class="border-b border-[#e8dcce] pb-4">
+                    <span class="text-xs font-serif tracking-widest text-[#9b6f56] uppercase">STEP 08 — 30 MINS EST.</span>
+                    <h2 class="font-serif text-3xl font-bold text-[#543b32]">Social Circle Rebrand</h2>
+                    <p class="text-sm text-[#7e5645]">Audit and standardise the qualities of people you allow into your inner sanctuary.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Friendships -->
+                    <div class="bg-[#f4efe6] p-5 rounded-2xl border border-[#e8dcce] space-y-3">
+                        <div class="flex items-center space-x-2 text-[#67473b]">
+                            <i class="fa-solid fa-user-group"></i>
+                            <h3 class="font-serif font-bold text-base">Ideal Friendships Standard</h3>
+                        </div>
+                        <textarea id="social_friends" rows="8" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-xl p-3 text-sm focus:outline-none" placeholder="What qualities do they have?&#10;- Ambitious & supportive&#10;- Celebrates my wins&#10;- Low drama, high trust&#10;- How do they make you feel? Inspired & safe."></textarea>
+                    </div>
+
+                    <!-- Relationship -->
+                    <div class="bg-[#f4efe6] p-5 rounded-2xl border border-[#e8dcce] space-y-3">
+                        <div class="flex items-center space-x-2 text-[#67473b]">
+                            <i class="fa-solid fa-heart"></i>
+                            <h3 class="font-serif font-bold text-base">Ideal Relationship Standard</h3>
+                        </div>
+                        <textarea id="social_partner" rows="8" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-xl p-3 text-sm focus:outline-none" placeholder="What qualities do they have?&#10;- Emotionally mature&#10;- Aligned long-term vision&#10;- Clear communication&#10;- What do they bring out in you? Growth & joy."></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 09. ONLINE PRESENCE -->
+            <section id="tab-digital" class="tab-content space-y-6">
+                <div class="border-b border-[#e8dcce] pb-4">
+                    <span class="text-xs font-serif tracking-widest text-[#9b6f56] uppercase">STEP 09 — 60 MINS EST.</span>
+                    <h2 class="font-serif text-3xl font-bold text-[#543b32]">Online Presence Audit</h2>
+                    <p class="text-sm text-[#7e5645]">Cleanse and realign your digital identity across platforms.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="digitalChecklistContainer">
+                    <!-- Digital checklist dynamically loaded -->
+                </div>
+            </section>
+
+            <!-- 10. EVOLVE CURRICULUM -->
+            <section id="tab-evolve" class="tab-content space-y-6">
+                <div class="border-b border-[#e8dcce] pb-4">
+                    <span class="text-xs font-serif tracking-widest text-[#9b6f56] uppercase">STEP 10 — 2026 CURRICULUM</span>
+                    <h2 class="font-serif text-3xl font-bold text-[#543b32]">Evolve Learning List</h2>
+                    <p class="text-sm text-[#7e5645]">Design your personal self-education and skill expansion blueprint.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-[#f4efe6] p-5 rounded-2xl border border-[#e8dcce] space-y-2">
+                        <div class="flex items-center space-x-2 text-[#67473b]">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                            <h3 class="font-serif font-bold text-base">Skills & Courses</h3>
+                        </div>
+                        <textarea id="evolve_skills" rows="5" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-xl p-3 text-sm focus:outline-none" placeholder="- High-ticket marketing course&#10;- Public speaking & storytelling&#10;- Financial analysis & investing"></textarea>
+                    </div>
+
+                    <div class="bg-[#f4efe6] p-5 rounded-2xl border border-[#e8dcce] space-y-2">
+                        <div class="flex items-center space-x-2 text-[#67473b]">
+                            <i class="fa-solid fa-book"></i>
+                            <h3 class="font-serif font-bold text-base">Books & Reading List</h3>
+                        </div>
+                        <textarea id="evolve_books" rows="5" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-xl p-3 text-sm focus:outline-none" placeholder="- Atomic Habits by James Clear&#10;- The Psychology of Money&#10;- Essentialism by Greg McKeown"></textarea>
+                    </div>
+
+                    <div class="bg-[#f4efe6] p-5 rounded-2xl border border-[#e8dcce] space-y-2 md:col-span-2">
+                        <div class="flex items-center space-x-2 text-[#67473b]">
+                            <i class="fa-solid fa-podcast"></i>
+                            <h3 class="font-serif font-bold text-base">Podcasts & Audio Curriculum</h3>
+                        </div>
+                        <textarea id="evolve_podcasts" rows="4" class="w-full bg-[#faf8f5] border border-[#e8dcce] rounded-xl p-3 text-sm focus:outline-none" placeholder="- Huberman Lab (Health & Focus)&#10;- Modern Wisdom&#10;- How I Built This"></textarea>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-[#543b32] text-[#faf8f5] px-4 py-3 rounded-xl shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center space-x-3 text-xs font-medium z-50">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+        <span id="toastMsg">Progress saved automatically</span>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // Data Schema & State
+        const defaultAuditCategories = [
+            'Business & Career', 'Finances', 'Physical Health', 'Mental Health', 
+            'Family', 'Friendships', 'Romantic Relationship', 'Hobbies', 
+            'Personal Growth', 'Home & Environment'
+        ];
+
+        const defaultDigitalPlatforms = [
+            { id: 'ig', name: 'Instagram', tasks: ['Declutter old posts/follows', 'Refine bio & aesthetic', 'Align story messaging'] },
+            { id: 'tt', name: 'TikTok', tasks: ['Clear saved/liked clutter', 'Establish content pillars', 'Optimize profile bio'] },
+            { id: 'li', name: 'LinkedIn', tasks: ['Update professional headshot', 'Revamp headline & summary', 'Connect with key peers'] }
+        ];
+
+        let state = {
+            audit: {},
+            visionCards: [
+                { id: 1, title: 'Ideal Life Aesthetic', url: 'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=600&q=80' },
+                { id: 2, title: 'Morning Routine & Wellness', url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=600&q=80' },
+                { id: 3, title: 'Focused Workspace', url: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=600&q=80' }
+            ],
+            digitalTasks: {}
+        };
+
+        // Load persisted state from localStorage
+        function loadSavedData() {
+            const saved = localStorage.getItem('90DayRebrand_Data');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    state = { ...state, ...parsed };
+                } catch(e) {
+                    console.error("Could not parse saved data", e);
+                }
+            }
+
+            // Populate form input elements
+            const inputIds = [
+                'cur_think', 'cur_speak', 'cur_habits', 'cur_energy', 'cur_tolerate',
+                'fut_think', 'fut_speak', 'fut_habits', 'fut_energy', 'fut_allow',
+                'releaseText', 'brand_image', 'brand_values', 'brand_mission', 'brand_vision', 'brand_summary',
+                'goal_dreams', 'goal_year', 'goal_q1', 'goal_monthly', 'goal_daily',
+                'habit_identity', 'habit_behaviors', 'habit_support',
+                'conf_strengths', 'conf_weaknesses', 'conf_affirmations',
+                'social_friends', 'social_partner',
+                'evolve_skills', 'evolve_books', 'evolve_podcasts'
+            ];
+
+            inputIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && state[id] !== undefined) {
+                    el.value = state[id];
+                }
+            });
+        }
+
+        // Save input state to localStorage
+        function saveData() {
+            const inputIds = [
+                'cur_think', 'cur_speak', 'cur_habits', 'cur_energy', 'cur_tolerate',
+                'fut_think', 'fut_speak', 'fut_habits', 'fut_energy', 'fut_allow',
+                'releaseText', 'brand_image', 'brand_values', 'brand_mission', 'brand_vision', 'brand_summary',
+                'goal_dreams', 'goal_year', 'goal_q1', 'goal_monthly', 'goal_daily',
+                'habit_identity', 'habit_behaviors', 'habit_support',
+                'conf_strengths', 'conf_weaknesses', 'conf_affirmations',
+                'social_friends', 'social_partner',
+                'evolve_skills', 'evolve_books', 'evolve_podcasts'
+            ];
+
+            inputIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    state[id] = el.value;
+                }
+            });
+
+            localStorage.setItem('90DayRebrand_Data', JSON.stringify(state));
+            updateOverallProgress();
+        }
+
+        // Auto attach listener to all inputs
+        function setupInputListeners() {
+            document.querySelectorAll('input, textarea').forEach(el => {
+                el.addEventListener('input', () => {
+                    saveData();
+                });
+            });
+        }
+
+        // TAB SWITCHING LOGIC
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-[#e8dcce]/60', 'font-semibold', 'text-[#67473b]');
+                btn.classList.add('text-[#7e5645]');
+            });
+
+            const activeTab = document.getElementById(tabId);
+            if (activeTab) activeTab.classList.add('active');
+
+            const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-[#e8dcce]/60', 'font-semibold', 'text-[#67473b]');
+                activeBtn.classList.remove('text-[#7e5645]');
+            }
+
+            // Close mobile sidebar if open
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        }
+
+        // 01. LIFE AUDIT RENDER
+        function renderAudit() {
+            const container = document.getElementById('auditItemsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let sum = 0;
+            defaultAuditCategories.forEach(cat => {
+                const val = state.audit[cat] !== undefined ? state.audit[cat] : 5;
+                sum += Number(val);
+
+                const item = document.createElement('div');
+                item.className = 'bg-[#f4efe6] p-4 rounded-xl border border-[#e8dcce] flex flex-col justify-between space-y-2';
+                item.innerHTML = `
+                    <div class="flex justify-between items-center text-sm font-medium text-[#543b32]">
+                        <span>${cat}</span>
+                        <span class="font-serif font-bold text-[#9b6f56] text-base" id="val-${cat}">${val}/10</span>
+                    </div>
+                    <input type="range" min="1" max="10" value="${val}" class="w-full cursor-pointer" oninput="updateAuditValue('${cat}', this.value)">
+                `;
+                container.appendChild(item);
+            });
+
+            const avg = (sum / defaultAuditCategories.length).toFixed(1);
+            document.getElementById('auditAverage').textContent = avg;
+        }
+
+        function updateAuditValue(cat, val) {
+            state.audit[cat] = Number(val);
+            document.getElementById(`val-${cat}`).textContent = `${val}/10`;
+            
+            let sum = 0;
+            defaultAuditCategories.forEach(c => {
+                sum += (state.audit[c] !== undefined ? Number(state.audit[c]) : 5);
+            });
+            document.getElementById('auditAverage').textContent = (sum / defaultAuditCategories.length).toFixed(1);
+            saveData();
+        }
+
+        // 02. BURNING RELEASE LETTER EFFECT
+        function burnReleaseLetter() {
+            const paper = document.getElementById('releasePaper');
+            const textarea = document.getElementById('releaseText');
+            if (!textarea.value.trim()) {
+                showToast("Write something to release first!");
+                return;
+            }
+
+            paper.classList.add('burning');
+            showToast("Releasing and burning negative energy...");
+
+            setTimeout(() => {
+                textarea.value = '';
+                paper.classList.remove('burning');
+                saveData();
+                showToast("Released! Focus on Future You.");
+            }, 2500);
+        }
+
+        // 04. VISION BOARD RENDER
+        function renderVisionBoard() {
+            const grid = document.getElementById('visionGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            state.visionCards.forEach((card, index) => {
+                const el = document.createElement('div');
+                el.className = 'relative group bg-[#f4efe6] rounded-xl overflow-hidden border border-[#e8dcce] shadow-sm flex flex-col h-56';
+                el.innerHTML = `
+                    <img src="${card.url}" onerror="this.src='https://placehold.co/600x400/e8dcce/543b32?text=Vision+Image'" class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="p-2.5 flex-1 flex items-center justify-between bg-[#faf8f5]">
+                        <span class="text-xs font-medium text-[#543b32] truncate">${card.title}</span>
+                        <button onclick="removeVisionCard(${index})" class="text-xs text-red-400 hover:text-red-600 p-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(el);
+            });
+        }
+
+        function addVisionCard() {
+            const url = prompt("Enter Image URL (Unsplash, Pinterest direct link, etc.):");
+            if (!url) return;
+            const title = prompt("Enter Title or Category (e.g., Ideal Career, Dream House):") || "Vision Item";
+
+            state.visionCards.push({ id: Date.now(), title, url });
+            renderVisionBoard();
+            saveData();
+            showToast("Added image to Vision Board!");
+        }
+
+        function removeVisionCard(index) {
+            state.visionCards.splice(index, 1);
+            renderVisionBoard();
+            saveData();
+        }
+
+        // 09. DIGITAL PRESENCE AUDIT RENDER
+        function renderDigitalAudit() {
+            const container = document.getElementById('digitalChecklistContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            defaultDigitalPlatforms.forEach(plat => {
+                const card = document.createElement('div');
+                card.className = 'bg-[#f4efe6] p-5 rounded-2xl border border-[#e8dcce] space-y-3';
+                
+                let tasksHTML = plat.tasks.map((task, idx) => {
+                    const key = `${plat.id}_${idx}`;
+                    const checked = state.digitalTasks[key] ? 'checked' : '';
+                    return `
+                        <label class="flex items-start space-x-2.5 text-xs text-[#543b32] cursor-pointer">
+                            <input type="checkbox" ${checked} onchange="toggleDigitalTask('${key}', this.checked)" class="mt-0.5 rounded text-[#9b6f56] focus:ring-[#9b6f56]">
+                            <span>${task}</span>
+                        </label>
+                    `;
+                }).join('');
+
+                card.innerHTML = `
+                    <div class="flex items-center space-x-2 text-[#67473b] border-b border-[#e8dcce] pb-2">
+                        <i class="fa-brands fa-${plat.id === 'ig' ? 'instagram' : plat.id === 'tt' ? 'tiktok' : 'linkedin'} text-lg"></i>
+                        <h3 class="font-serif font-bold text-sm uppercase">${plat.name}</h3>
+                    </div>
+                    <div class="space-y-2.5 pt-1">
+                        ${tasksHTML}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleDigitalTask(key, checked) {
+            state.digitalTasks[key] = checked;
+            saveData();
+        }
+
+        // OVERALL PROGRESS CALCULATOR
+        function updateOverallProgress() {
+            let filledCount = 0;
+            let totalTracked = 15;
+
+            // Check filled inputs
+            const checkKeys = [
+                'cur_think', 'fut_think', 'brand_image', 'brand_values', 
+                'brand_mission', 'brand_vision', 'goal_q1', 'habit_identity', 
+                'conf_affirmations', 'social_friends', 'evolve_skills'
+            ];
+
+            checkKeys.forEach(k => {
+                if (state[k] && state[k].trim().length > 3) filledCount++;
+            });
+
+            if (Object.keys(state.audit).length > 0) filledCount += 2;
+            if (state.visionCards.length >= 3) filledCount += 2;
+
+            const percentage = Math.min(Math.round((filledCount / totalTracked) * 100), 100);
+            document.getElementById('overallProgressPercent').textContent = `${percentage}%`;
+            document.getElementById('overallProgressBar').style.width = `${percentage}%`;
+        }
+
+        // TOAST NOTIFICATION
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // EXPORT DATA FUNCTION
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "My_90_Day_Rebrand_Plan.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // INITIALIZATION
+        window.onload = function() {
+            loadSavedData();
+            setupInputListeners();
+            renderAudit();
+            renderVisionBoard();
+            renderDigitalAudit();
+            updateOverallProgress();
+
+            // Mobile menu toggle
+            document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('-translate-x-full');
+            });
+        };
+    </script>
+</body>
+</html>
